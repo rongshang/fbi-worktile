@@ -1,0 +1,74 @@
+﻿<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/templates/ui.xhtml">
+    <ui:define name="head">
+        <link type="text/css" href="#{request.contextPath}/css/worktile.css" rel="stylesheet"/>
+        <script type="text/javascript" src="#{request.contextPath}/js/pub.js"/>
+    </ui:define>
+    <ui:define name="content">
+        <h:form id="form" enctype="multipart/form-data">
+            <div style="margin:5px;">
+                <p:growl id="grom" showDetail="true"/>
+                <!--列表维护-->
+                <p:panel header="工单任务" id ="pgCondition">
+                    <p:growl id="msgs" showDetail="true"/>
+                    <p:treeTable id="pdtRecentlyPower"
+                                 value="#{worktileExecQryAction.selfTaskTreeRoot}"
+                                 var="document"
+                                 dynamic="true"
+                                 cache="false"
+                                 emptyMessage="数据记录为空..."
+                                 rowStyleClass="#{document.infoId eq null ? null :'rowGreenyellowStyle'}"
+                                 scrollable="true"
+                                 scrollHeight="500">
+                        <p:column style="width:200px;text-align:left;">
+                            <h:outputText value="#{document.rowHeaderText}"/>
+                        </p:column>
+                        <p:column headerText="工单编号" style="text-align:left;" width="10%">
+                            <h:outputText value="#{document.infoId}"/>
+                        </p:column>
+                        <p:column headerText="工单主题" style=" text-align:left;" width="30%">
+                            <h:outputText value="#{document.infoName}"/>
+                        </p:column>
+                        <p:column headerText="任务录入时间" style="text-align:left;" width="20%">
+                            <h:outputText value="#{document.createdTime}"/>
+                        </p:column>
+                        <p:column headerText="操作" style=" text-align: left;" width="10%">
+                            <p:commandButton
+                                              value="详"
+                                              rendered="#{document.infoPkid eq null ? 'false':'true'}"
+                                              action="#{urlCtrl.getStrJumpUrl('ToWADetail',
+                                                          document.infoPkid,'')}">
+                            </p:commandButton>
+                            <p:commandButton
+                                              value="派"
+                                              rendered="#{document.infoPkid eq null ? 'false':'true'}"
+                                              action="#{urlCtrl.getStrJumpUrl('ToWAOperMng',
+                                                          document.infoPkid,
+                                                          document.worktileAppointPkid)}">
+                            </p:commandButton>
+                            <p:commandButton value="未"
+                                             rendered="#{document.recvExecFlag eq '1' ? 'true' :document.recvExecFlag eq '2' ? 'true':'false'}"
+                                                 action="#{worktileExecQryAction.onClickUndoAction(document.worktileAppointPkid)}"
+                                             update=":form:msgs,:form:pgCondition">
+                            </p:commandButton>
+                            <p:commandButton value="正"
+                                             rendered="#{document.recvExecFlag eq '0'?'true' :document.recvExecFlag eq '2'?'true' :'false'}"
+                                             action="#{worktileExecQryAction.onClickDoingAction(document.worktileAppointPkid)}"
+                                             update=":form:msgs, :form:pgCondition">
+                            </p:commandButton>
+                            <p:commandButton value="完"
+                                             rendered="#{document.recvExecFlag eq '0' ? 'true':document.recvExecFlag eq '1'? 'true' :'false'}"
+                                             action="#{worktileExecQryAction.onClickDoneAction(document.worktileAppointPkid)}"
+                                             update=":form:msgs, :form:pgCondition">
+                            </p:commandButton>
+
+                        </p:column>
+                    </p:treeTable>
+                </p:panel>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>
