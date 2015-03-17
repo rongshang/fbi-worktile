@@ -1,5 +1,6 @@
 package worktile.view.appoint;
 
+import org.primefaces.event.DragDropEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import skyline.util.MessageUtil;
@@ -34,11 +35,21 @@ public class WorktileAppointAction {
 
     private WorktileAppointShow worktileAppointShowQry;
     private List<WorktileAppointShow> worktileAppointShowList;
+    private List<WorktileAppointShow> dropWorktileAppointShowList;
+    private WorktileAppointShow selectWorktileAppointShow;
 
     @PostConstruct
     public void init(){
         worktileAppointShowQry = new WorktileAppointShow();
         worktileAppointShowList =new ArrayList<>();
+        dropWorktileAppointShowList = new ArrayList<>();
+    }
+
+    public void onCarDrop(DragDropEvent ddEvent) {
+        WorktileAppointShow worktileAppointShow = ((WorktileAppointShow) ddEvent.getData());
+
+        dropWorktileAppointShowList.add(worktileAppointShow);
+        worktileAppointShowList.remove(worktileAppointShow);
     }
 
     public String onQueryAction(String strQryMsgOutPara) {
@@ -148,5 +159,21 @@ public class WorktileAppointAction {
 
     public void setWorktileAppointShowList(List<WorktileAppointShow> worktileAppointShowList) {
         this.worktileAppointShowList = worktileAppointShowList;
+    }
+
+    public List<WorktileAppointShow> getDropWorktileAppointShowList() {
+        return dropWorktileAppointShowList;
+    }
+
+    public void setDropWorktileAppointShowList(List<WorktileAppointShow> dropWorktileAppointShowList) {
+        this.dropWorktileAppointShowList = dropWorktileAppointShowList;
+    }
+
+    public WorktileAppointShow getSelectWorktileAppointShow() {
+        return selectWorktileAppointShow;
+    }
+
+    public void setSelectWorktileAppointShow(WorktileAppointShow selectWorktileAppointShow) {
+        this.selectWorktileAppointShow = selectWorktileAppointShow;
     }
 }

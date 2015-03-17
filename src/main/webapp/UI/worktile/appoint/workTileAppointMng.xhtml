@@ -1,0 +1,120 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/templates/ui.xhtml">
+    <ui:define name="head">
+        <link type="text/css" href="#{request.contextPath}/css/worktile.css" rel="stylesheet"/>
+        <script type="text/javascript" src="#{request.contextPath}/js/pub.js"/>
+        <script type="text/javascript" language="javascript">
+            document.onkeydown = function TabReplace() {
+                if (event.keyCode == 13) {
+                    if (event.srcElement.tagName != 'BUTTON')
+                        event.keyCode = 9;
+                    else
+                        event.srcElement.click();
+                }
+            }
+
+            function handleDrop(event, ui) {
+                var droppedCar = ui.draggable;
+                droppedCar.fadeOut('fast');
+            }
+        </script>
+    </ui:define>
+    <ui:define name="content">
+        <h:form id="carForm">
+            <p:growl id="msgs" showDetail="true"/>
+            <p:focus for="id"/>
+            <p:panel>
+                <h:panelGrid id="pdQry" columns="2" style="width: 100%">
+                    <h:panelGrid columns="4">
+                        <p:outputLabel value="工单编号：" for="id"/>
+                        <p:inputText id="id" value="#{worktileAppointAction.worktileAppointShowQry.infoId}"
+                                     style="width: 200px"/>
+                        <p:outputLabel value="工单名称：" for="name"/>
+                        <p:inputText id="name" value="#{worktileAppointAction.worktileAppointShowQry.infoName}"
+                                     style="width: 200px"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3">
+                        <p:commandButton id="qryBtn" value="查询"
+                                         action="#{worktileAppointAction.onQueryAction('true')}"
+                                         update="availableCars,msgs">
+                        </p:commandButton>
+                        <p:commandButton id="resetBtn" value="重置"
+                                         type="reset"
+                                         update="pdQry,msgs">
+                        </p:commandButton>
+                        <p:ajaxStatus style="width:16px;height:16px;">
+                            <f:facet name="start">
+                                <h:graphicImage value="/images/ajaxloading.gif"/>
+                            </f:facet>
+                            <f:facet name="complete">
+                                <h:outputText value=""/>
+                            </f:facet>
+                        </p:ajaxStatus>
+                    </h:panelGrid>
+                </h:panelGrid>
+            </p:panel>
+
+
+
+            <p:fieldset id="availableCarsField" legend="Available Cars">
+                <p:dataTable id="availableCars" var="record" value="#{worktileAppointAction.worktileAppointShowList}">
+                    <p:column style="width:20px">
+                        <h:outputText id="dragIcon" styleClass="ui-icon ui-icon-arrow-4" />
+                        <p:draggable for="dragIcon" revert="true" helper="clone"/>
+                    </p:column>
+
+                    <p:column headerText="工单编号" style="width:140px;text-align:left">
+                        <h:outputText value="#{record.infoId}"/>
+                    </p:column>
+                    <p:column headerText="工单名称" style="width:200px;text-align:left">
+                        <h:outputText value="#{record.infoName}"/>
+                    </p:column>
+                    <p:column headerText="开始时间" style="width:120px;text-align:center">
+                        <h:outputText value="#{record.infoStartTime}"/>
+                    </p:column>
+                    <p:column headerText="结束时间" style="width:120px;text-align:center">
+                        <h:outputText value="#{record.infoEndTime}"/>
+                    </p:column>
+
+
+                </p:dataTable>
+            </p:fieldset>
+
+            <p:fieldset id="selectWorktileAppointShows" legend="Selected Cars" style="margin-top:20px">
+                <p:outputPanel id="dropArea">
+                    <h:outputText value="!!!Drop here!!!" rendered="#{empty worktileAppointAction.dropWorktileAppointShowList}" style="font-size:24px;" />
+                    <p:dataTable id="selectWorktileAppointShowsTable" var="record" value="#{worktileAppointAction.dropWorktileAppointShowList}" rendered="#{not empty worktileAppointAction.dropWorktileAppointShowList}">
+
+                        <p:column headerText="工单编号" style="width:140px;text-align:left">
+                            <h:outputText value="#{record.infoId}"/>
+                        </p:column>
+                        <p:column headerText="工单名称" style="width:200px;text-align:left">
+                            <h:outputText value="#{record.infoName}"/>
+                        </p:column>
+                        <p:column headerText="开始时间" style="width:120px;text-align:center">
+                            <h:outputText value="#{record.infoStartTime}"/>
+                        </p:column>
+                        <p:column headerText="结束时间" style="width:120px;text-align:center">
+                            <h:outputText value="#{record.infoEndTime}"/>
+                        </p:column>
+
+                        <p:column style="width:32px">
+                            <p:commandButton update=":carForm:display" oncomplete="PF('carDialog').show()" icon="ui-icon-search">
+                                <f:setPropertyActionListener value="#{car}" target="#{worktileAppointAction.selectWorktileAppointShow}" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </p:outputPanel>
+            </p:fieldset>
+
+            <p:droppable for="selectWorktileAppointShows" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableCars" onDrop="handleDrop">
+                <p:ajax listener="#{worktileAppointAction.onCarDrop}" update="dropArea availableCars" />
+            </p:droppable>
+
+        </h:form>
+    </ui:define>
+</ui:composition>

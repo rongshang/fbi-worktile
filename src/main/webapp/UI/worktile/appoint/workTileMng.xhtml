@@ -1,0 +1,132 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/templates/ui.xhtml">
+
+    <ui:define name="head">
+        <link type="text/css" href="#{request.contextPath}/css/worktile.css" rel="stylesheet"/>
+        <script type="text/javascript" src="#{request.contextPath}/js/pub.js"/>
+        <script type="text/javascript" src="#{request.contextPath}/My97DatePicker/WdatePicker.js"/>
+        <script type="text/javascript">
+            document.onkeydown = function TabReplace() {
+                if (event.keyCode == 13) {
+                    if (event.srcElement.tagName != 'BUTTON')
+                        event.keyCode = 9;
+                }
+            }
+    </script>
+        <style type="text/css">
+            .col-95 {
+                width: 95%;
+            }
+
+            .col-5 {
+                width: 5%;
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="content">
+        <div style="margin:5px">
+            <p:tabView id="tabview" dynamic="true" cache="false" style="font-weight:normal;font-style:normal;">
+                <p:tab title="工单管理" >
+                    <h:form id="form">
+                        <div id="qrytable">
+                            <p:growl id="msgs" showDetail="false"/>
+                            <p:panel style="margin-top:10px" id="panel">
+                                <h:panelGrid columns="2" cellspacing="5" columnClasses="col-95,col-5">
+                                    <h:panelGrid columns="4" cellspacing="5" style="text-align: right;">
+                                        <h:outputLabel  value="工单编号:"/>
+                                        <p:inputText value="#{worktileAction.worktileShowQry.id}" size="30"/>
+                                        <h:outputLabel value="工单标题:"/>
+                                        <p:inputText  value="#{worktileAction.worktileShowQry.subject}" size="30"/>
+                                    </h:panelGrid>
+                                    <h:panelGrid>
+                                        <p:commandButton style="width:90px;" id="qrybtn" value="查询"
+                                                         action="#{worktileAction.getWorkorderInfoListByModelShow}"
+                                                         update="pdt,msgs">
+                                        </p:commandButton>
+                                        <p:commandButton style="width:90px;" id="aa" value="工单指派"
+                                                         action="#{worktileAction.getURL}"
+                                                        >
+                                        </p:commandButton>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                            </p:panel>
+                            <p:ajaxStatus style="height:18px;text-align:center">
+                                <f:facet name="start">
+                                    <h:graphicImage value="/images/ajaxloadingbar.gif"/>
+                                </f:facet>
+                                <f:facet name="complete">
+                                    <h:outputText value=""/>
+                                </f:facet>
+                            </p:ajaxStatus>
+
+                            <p:commandButton value="#{worktileAction.isEnableFlag?'删除':'增加项'}"
+                                             action="#{worktileAction.isEnable}" update="pgViewForAdd" ajax="false"/>
+                            <p:panel id="pgViewForAdd" rendered="#{worktileAction.isEnableFlag}">
+                                <h:inputHidden value='#{worktileAction.strSubmitType}' id='strSubmitType' />
+                                <h:panelGrid columns='2'>
+                                       <h:panelGrid columns='2'>
+                                         工单编号： <p:inputText value="#{worktileAction.worktileShowAdd.id}"
+                                                              style="background-color:gainsboro"
+                                                              readonly="true"/>
+                                         工单标题： <h:inputText style='width: 180px;' id='subject' value='#{worktileAction.worktileShowAdd.subject}'  />
+                                         工单内容： <h:inputTextarea style='width: 180px;' id='content' cols='40' rows='5' >
+                                                       #{worktileAction.worktileShowAdd.content}
+                                                   </h:inputTextarea>
+                                       </h:panelGrid>
+                                       <h:panelGrid columns='2'>
+                                         工单人员： <h:inputText style='width: 180px;' value='#{worktileAction.worktileShowAdd.startTime}'/>
+                                         开始时间： <h:inputText style='width: 180px;' onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" value='#{worktileAction.worktileShowAdd.startTime}'/>
+                                         结束时间： <h:inputText style='width: 180px;' onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" value='#{worktileAction.worktileShowAdd.endTime}'/>
+                                       <p:commandButton value='提交' update="pgViewForAdd,msgs" action='#{worktileAction.onClickForMngAction}' />
+                                       </h:panelGrid>
+                                </h:panelGrid>
+                            </p:panel>
+                            <!-- selection="#{worktileAction.selectedRuleRecord}"-->
+                            <p:dataTable id="pdt" dynamic="true" style="width:100%;"
+                                         value="#{worktileAction.worktileList}" var="record"
+                                         rowKey="#{record.pkid}" selectionMode="single"
+                                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         paginator="true" rows="15" paginatorPosition="bottom"
+                                         rowsPerPageTemplate="100,50,30,15,5"
+                                         emptyMessage="没有查询到数据记录...">
+
+                                <p:column headerText="工单编号" style="text-align: center">
+                                    <h:outputText value="#{record.id}"/>
+                                </p:column>
+                                <p:column headerText="工单标题" style="text-align: center">
+                                    <h:outputText value="#{record.subject}"/>
+                                </p:column>
+                                <p:column headerText="工单内容" style="text-align: center">
+                                    <h:outputText value="#{record.content}"/>
+                                </p:column>
+                                <p:column headerText="工单人员" style="text-align: center">
+                                    <h:outputText value="#{record.startTime}"/>
+                                </p:column>
+                                <p:column headerText="开始时间" style="text-align: center">
+                                    <h:outputText value="#{record.startTime}"/>
+                                </p:column>
+                                <p:column headerText="结束时间" style="text-align: center">
+                                    <h:outputText value="#{record.endTime}"/>
+                                </p:column>
+
+                                <p:columnGroup type="footer">
+                                    <p:row>
+                                        <p:column colspan="11"
+                                                  footerText="共查询到#{fn:length(worktileAction.worktileList)}笔记录"
+                                                  style="text-align:right"/>
+                                    </p:row>
+                                </p:columnGroup>
+                            </p:dataTable>
+                        </div>
+                    </h:form>
+                </p:tab>
+            </p:tabView>
+        </div>
+    </ui:define>
+</ui:composition>

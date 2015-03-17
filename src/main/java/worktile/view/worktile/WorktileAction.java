@@ -1,5 +1,6 @@
 package worktile.view.worktile;
 
+import worktile.repository.model.Worktile;
 import worktile.repository.model.not_mybatis.WorktileShow;
 import worktile.service.*;
 import org.apache.commons.beanutils.BeanUtils;
@@ -35,8 +36,11 @@ public class WorktileAction implements Serializable {
     private WorktileShow worktileShowUpd;
     private WorktileShow worktileShowDel;
     private List<WorktileShow> worktileShowList;
+    private List<Worktile> worktileList;
 
     private String strSubmitType;
+    //是否显示
+    private Boolean isEnableFlag;
 
     @PostConstruct
     public void init() {
@@ -49,16 +53,41 @@ public class WorktileAction implements Serializable {
     public void initData() {
         try {
             this.worktileShowList = new ArrayList<>();
+            worktileList = new ArrayList<>();
             worktileShowQry = new WorktileShow();
             worktileShowSel = new WorktileShow();
             worktileShowAdd = new WorktileShow();
             worktileShowUpd = new WorktileShow();
             worktileShowDel = new WorktileShow();
             strSubmitType = "";
+            isEnableFlag = false;
         }catch (Exception e){
             logger.error("初始化失败", e);
             MessageUtil.addError("初始化失败");
         }
+    }
+
+    public String getURL(){
+        return "workTileAppointMng";
+    }
+    /**
+     * auto:hu
+     * 是否显示
+     */
+     public void isEnable(){
+         isEnableFlag = !isEnableFlag;
+         if(isEnableFlag){
+             initForAdd();
+         }
+     }
+
+    /**
+     * auto:hu
+     * 查询所有工单信息
+     * @return
+     */
+    public void getWorkorderInfoListByModelShow(){
+        worktileList = worktileService.getWorkorderInfoListByModelShow(worktileShowQry);
     }
 
     public String onQueryAllAction(String strQryMsgOutPara) {
@@ -131,6 +160,7 @@ public class WorktileAction implements Serializable {
      * @param
      */
     public void onClickForMngAction() {
+
         if (strSubmitType.equals("Del")) {
             deleteRecordAction(worktileShowDel);
             MessageUtil.addInfo("删除数据完成。");
@@ -224,6 +254,10 @@ public class WorktileAction implements Serializable {
         return strSubmitType;
     }
 
+    public void setStrSubmitType(String strSubmitType) {
+        this.strSubmitType = strSubmitType;
+    }
+
     public WorktileShow getWorktileShowUpd() {
         return worktileShowUpd;
     }
@@ -240,5 +274,21 @@ public class WorktileAction implements Serializable {
         this.worktileShowSel = worktileShowSel;
     }
 
-/*智能字段 End*/
+    public List<Worktile> getWorktileList() {
+        return worktileList;
+    }
+
+    public void setWorktileList(List<Worktile> worktileList) {
+        this.worktileList = worktileList;
+    }
+
+    public Boolean getIsEnableFlag() {
+        return isEnableFlag;
+    }
+
+    public void setIsEnableFlag(Boolean isEnableFlag) {
+        this.isEnableFlag = isEnableFlag;
+    }
+
+    /*智能字段 End*/
 }
