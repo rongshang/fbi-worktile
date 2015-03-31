@@ -160,7 +160,6 @@ public class WorktileAction implements Serializable {
      * @param
      */
     public void onClickForMngAction() {
-
         if (strSubmitType.equals("Del")) {
             deleteRecordAction(worktileShowDel);
             MessageUtil.addInfo("删除数据完成。");

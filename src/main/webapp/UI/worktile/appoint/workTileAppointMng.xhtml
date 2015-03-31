@@ -16,7 +16,6 @@
                         event.srcElement.click();
                 }
             }
-
             function handleDrop(event, ui) {
                 var droppedCar = ui.draggable;
                 droppedCar.fadeOut('fast');
@@ -58,15 +57,12 @@
                 </h:panelGrid>
             </p:panel>
 
-
-
             <p:fieldset id="availableCarsField" legend="Available Cars">
                 <p:dataTable id="availableCars" var="record" value="#{worktileAppointAction.worktileAppointShowList}">
                     <p:column style="width:20px">
                         <h:outputText id="dragIcon" styleClass="ui-icon ui-icon-arrow-4" />
                         <p:draggable for="dragIcon" revert="true" helper="clone"/>
                     </p:column>
-
                     <p:column headerText="工单编号" style="width:140px;text-align:left">
                         <h:outputText value="#{record.infoId}"/>
                     </p:column>
@@ -79,15 +75,17 @@
                     <p:column headerText="结束时间" style="width:120px;text-align:center">
                         <h:outputText value="#{record.infoEndTime}"/>
                     </p:column>
-
-
                 </p:dataTable>
             </p:fieldset>
 
             <p:fieldset id="selectWorktileAppointShows" legend="Selected Cars" style="margin-top:20px">
                 <p:outputPanel id="dropArea">
-                    <h:outputText value="!!!Drop here!!!" rendered="#{empty worktileAppointAction.dropWorktileAppointShowList}" style="font-size:24px;" />
-                    <p:dataTable id="selectWorktileAppointShowsTable" var="record" value="#{worktileAppointAction.dropWorktileAppointShowList}" rendered="#{not empty worktileAppointAction.dropWorktileAppointShowList}">
+                    <h:outputText value="!!!Drop here!!!"
+                                  rendered="#{empty worktileAppointAction.dropWorktileAppointShowList}"
+                                  style="font-size:24px;" />
+                    <p:dataTable id="selectWorktileAppointShowsTable" var="record"
+                                 value="#{worktileAppointAction.dropWorktileAppointShowList}"
+                                 rendered="#{not empty worktileAppointAction.dropWorktileAppointShowList}">
 
                         <p:column headerText="工单编号" style="width:140px;text-align:left">
                             <h:outputText value="#{record.infoId}"/>
@@ -110,11 +108,11 @@
                     </p:dataTable>
                 </p:outputPanel>
             </p:fieldset>
-
-            <p:droppable for="selectWorktileAppointShows" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableCars" onDrop="handleDrop">
+            <p:droppable for="selectWorktileAppointShows" tolerance="touch"
+                         activeStyleClass="ui-state-highlight"
+                         datasource="availableCars" onDrop="handleDrop">
                 <p:ajax listener="#{worktileAppointAction.onCarDrop}" update="dropArea availableCars" />
             </p:droppable>
-
         </h:form>
     </ui:define>
 </ui:composition>
